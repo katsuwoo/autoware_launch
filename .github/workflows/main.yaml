@@ -1,0 +1,55 @@
+name: Update Other Repo with Commit ID (using yq)
+
+on:
+  workflow_dispatch: # 手動実行トリガー
+
+jobs:
+  update_other_repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get Commit ID
+        id: get_commit_id
+        run: |
+          COMMIT_ID=$(git rev-parse HEAD)
+          echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_OUTPUT
+
+      - name: Checkout Other Repository
+        uses: actions/checkout@v3
+        with:
+          repository: katsuwoo/autoware
+          path: another-repo
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Install yq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yq
+
+      - name: Replace Text in File (with yq)
+        run: |
+          yq e '.repositories."launcher/autoware_launch".version = "${{ steps.get_commit_id.outputs.COMMIT_ID }}"' -i autoware.repos
+        working-directory: .
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+        working-directory: another-repo
+
+      - name: Commit Changes
+        run: |
+          git add .
+          git commit -m "Update with commit ID: ${{ steps.get_commit_id.outputs.COMMIT_ID }}"
+        working-directory: another-repo
+
+      - name: Push Changes
+        run: |
+          git push origin HEAD:features/hoge
+        working-directory: another-repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
