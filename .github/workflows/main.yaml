@@ -30,9 +30,9 @@ jobs:
 
       - name: yq
         uses: mikefarah/yq@master
+        working-directory: .
         with:
           cmd: yq e '.repositories."launcher/autoware_launch".version = "${{ steps.get_commit_id.outputs.COMMIT_ID }}"' -i another-repo/autoware.repos
-        working-directory: .
 
       - name: Configure Git
         run: |
