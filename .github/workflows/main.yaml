@@ -28,14 +28,10 @@ jobs:
           path: another-repo
           token: ${{ secrets.GH_PAT }}
 
-      - name: Install yq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y yq
-
-      - name: Replace Text in File (with yq)
-        run: |
-          yq e '.repositories."launcher/autoware_launch".version = "${{ steps.get_commit_id.outputs.COMMIT_ID }}"' -i another-repo/autoware.repos
+      - name: yq
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.repositories."launcher/autoware_launch".version = "${{ steps.get_commit_id.outputs.COMMIT_ID }}"' -i another-repo/autoware.repos
         working-directory: .
 
       - name: Configure Git
