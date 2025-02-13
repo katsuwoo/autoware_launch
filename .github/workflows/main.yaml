@@ -27,6 +27,7 @@ jobs:
           repository: katsuwoo/autoware
           path: another-repo
           token: ${{ secrets.GH_PAT }}
+          ref: features/hoge
 
       - name: yq
         uses: mikefarah/yq@master
