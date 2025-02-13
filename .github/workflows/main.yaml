@@ -2,9 +2,6 @@ name: Update Other Repo with Commit ID (using yq)
 
 on:
   workflow_dispatch: # 手動実行トリガー
-  push:
-    branches:
-      - 'features/*'
 
 jobs:
   update_other_repo:
@@ -36,7 +33,7 @@ jobs:
       - name: Replace Text in File (with yq)
         run: |
           yq e '.repositories."launcher/autoware_launch".version = "${{ steps.get_commit_id.outputs.COMMIT_ID }}"' -i autoware.repos
-        working-directory: .
+        working-directory: another-repo
 
       - name: Configure Git
         run: |
