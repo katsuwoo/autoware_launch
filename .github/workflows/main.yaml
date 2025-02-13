@@ -2,6 +2,9 @@ name: Update Other Repo with Commit ID (using yq)
 
 on:
   workflow_dispatch: # 手動実行トリガー
+  push:
+    branches:
+      - 'features/*'
 
 jobs:
   update_other_repo:
